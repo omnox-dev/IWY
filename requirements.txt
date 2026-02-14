@@ -1,0 +1,6 @@
+opencv-python
+ultralytics
+pytesseract
+numpy
+pyttsx3
+pypiwin32; platform_system == 'Windows'
