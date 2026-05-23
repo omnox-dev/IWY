@@ -4,3 +4,6 @@ pytesseract
 numpy
 pyttsx3
 pypiwin32; platform_system == 'Windows'
+google-genai
+pillow
+python-dotenv

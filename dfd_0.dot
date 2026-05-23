@@ -1,0 +1,18 @@
+digraph DFD_Level_0 {
+    rankdir=LR;
+    node [fontname="Arial"];
+    edge [fontname="Arial", fontsize=10];
+    
+    // External Entities
+    User [shape=box, style=filled, fillcolor=lightgrey, label="Glaucoma Patient"];
+    Camera [shape=box, style=filled, fillcolor=lightgrey, label="Physical Environment\n(Camera Hardware)"];
+    
+    // Core Process
+    System [shape=circle, style=filled, fillcolor=lightblue, label="0.0\nIWY Assistive\nVision System"];
+    
+    // Flows
+    User -> System [label=" Touch Gestures\n(Tap/Double Tap) "];
+    Camera -> System [label=" Raw Image Buffer "];
+    System -> User [label=" Spatial Audio (TTS) "];
+    System -> User [label=" AR Visual Overlay "];
+}

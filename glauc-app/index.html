@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" class="dark h-full w-full">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>HUD Vision Assistant</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD@100..700,0..1,-50..200&display=swap" rel="stylesheet" />
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#eaea00",
+                        "on-surface-variant": "#cac8aa",
+                        "on-primary-fixed-variant": "#494900",
+                        "surface-variant": "#353535",
+                        "background": "#131313",
+                        "on-surface": "#e2e2e2",
+                    },
+                    fontFamily: {
+                        "headline-md": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "label-xl": ["Space Grotesk"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Space Grotesk"]
+                    }
+                }
+            }
+        }
+    </script>
+  </head>
+  <body class="bg-transparent text-on-surface font-body-md overflow-hidden h-full w-full selection:bg-primary-container">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

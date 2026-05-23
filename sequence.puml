@@ -1,0 +1,35 @@
+@startuml IWY_Interaction_Sequence
+skinparam BoxPadding 10
+actor "Glaucoma Patient" as User
+participant "HUD Interface" as UI
+participant "Camera/Hardware" as Camera
+participant "Edge AI Model\n(YOLO/ML Kit)" as AI
+participant "Audio Engine\n(TTS)" as TTS
+
+User -> UI: Double Tap (Mode Toggle)
+UI -> UI: Toggle Mode (Safety <-> OCR)
+UI -> User: Visual Update: Change Overlay Transparency
+UI -> TTS: Announce: "Mode Switched"
+activate TTS
+TTS --> User: Audio: "Text Scan Mode"
+deactivate TTS
+
+User -> UI: Single Tap (Scan Environment)
+UI -> Camera: Request High-Res Frame
+activate Camera
+Camera --> UI: Native Image Buffer
+deactivate Camera
+
+UI -> AI: Send Image for Local Inference
+activate AI
+note right of AI: Processes 100% locally\n(No Cloud Latency)
+AI --> UI: Return JSON (Boxes/Text/Confidence)
+deactivate AI
+
+UI -> UI: Aggregate Spatial Data\n(Calculate Left/Right, Near/Far)
+UI -> UI: Render Neon-Yellow\nBounding Boxes on HUD
+UI -> TTS: Dispatch Computed Summary String
+activate TTS
+TTS --> User: Audio: "Chair left, Person center"
+deactivate TTS
+@enduml

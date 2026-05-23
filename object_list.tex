@@ -1,0 +1,109 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{multicol}
+
+\title{\textbf{IWY Assistant: Supported Object Detection Classes}}
+\author{TensorFlow.js COCO-SSD Model}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Overview}
+The IWY Assistant utilizes the \textbf{COCO-SSD (Common Objects in Context - Single Shot Detector)} lightweight model. This model is specifically optimized for mobile execution and can recognize \textbf{80 distinct categories} of objects.
+
+\section*{Detection Categories}
+The following list represents all objects the AI can currently identify. Labels highlighted in the application's "Hazard Mode" (like Vehicles and Stairs) are marked with an asterisk (*).
+
+\begin{multicols}{2}
+\begin{itemize}
+    \item person *
+    \item bicycle *
+    \item car *
+    \item motorcycle *
+    \item airplane
+    \item bus *
+    \item train *
+    \item truck *
+    \item boat
+    \item traffic light *
+    \item fire hydrant
+    \item stop sign *
+    \item parking meter
+    \item bench
+    \item bird
+    \item cat *
+    \item dog *
+    \item horse
+    \item sheep
+    \item cow
+    \item elephant
+    \item bear
+    \item zebra
+    \item giraffe
+    \item backpack
+    \item umbrella
+    \item handbag
+    \item tie
+    \item suitcase
+    \item frisbee
+    \item skis
+    \item snowboard
+    \item sports ball
+    \item kite
+    \item baseball bat
+    \item baseball glove
+    \item skateboard
+    \item surfboard
+    \item tennis racket
+    \item bottle
+    \item wine glass
+    \item cup
+    \item fork
+    \item knife
+    \item spoon
+    \item bowl
+    \item banana
+    \item apple
+    \item sandwich
+    \item orange
+    \item broccoli
+    \item carrot
+    \item hot dog
+    \item pizza
+    \item donut
+    \item cake
+    \item chair
+    \item couch
+    \item potted plant
+    \item bed
+    \item dining table
+    \item toilet
+    \item tv
+    \item laptop
+    \item mouse
+    \item remote
+    \item keyboard
+    \item cell phone
+    \item microwave
+    \item oven
+    \item toaster
+    \item sink
+    \item refrigerator
+    \item book
+    \item clock
+    \item vase
+    \item scissors
+    \item teddy bear
+    \item hair drier
+    \item toothbrush
+\end{itemize}
+\end{multicols}
+
+\section*{Note on Specific Hazards}
+While "stairs" are a priority in our code's safety logic, the base COCO-SSD model often classifies them under broad spatial categories or requires a custom-trained layer for higher accuracy. The current implementation prioritizes \textbf{Vehicles, People, and Signage} as primary navigational hazards.
+
+\end{document}

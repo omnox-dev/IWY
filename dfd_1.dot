@@ -1,0 +1,30 @@
+digraph DFD_Level_1 {
+    rankdir=LR;
+    node [fontname="Arial"];
+    edge [fontname="Arial", fontsize=10];
+    
+    // Entities
+    User [shape=box, style=filled, fillcolor=lightgrey, label="Glaucoma Patient"];
+    Camera [shape=box, style=filled, fillcolor=lightgrey, label="Physical Environment"];
+    
+    // Processes
+    P1 [shape=circle, style=filled, fillcolor=lightblue, label="1.0\nGesture\nController"];
+    P2 [shape=circle, style=filled, fillcolor=lightblue, label="2.0\nCamera\nCapture"];
+    P3 [shape=circle, style=filled, fillcolor=lightblue, label="3.0\nEdge AI\nInference"];
+    P4 [shape=circle, style=filled, fillcolor=lightblue, label="4.0\nOutput\nSynthesizer"];
+    
+    // Data Store
+    DS1 [shape=note, style=filled, fillcolor=lightyellow, label="D1: App State\n(Active Mode)"];
+    
+    // Flows
+    User -> P1 [label=" Capacitive Touch "];
+    P1 -> DS1 [label=" Update State\n(Safety <-> OCR) "];
+    P1 -> P2 [label=" Trigger Hardware Call "];
+    DS1 -> P3 [label=" Read Active Mode "];
+    
+    Camera -> P2 [label=" Pixels/Light "];
+    P2 -> P3 [label=" Base64 / Tensor "];
+    
+    P3 -> P4 [label=" JSON Arrays\n(Boxes/Text) "];
+    P4 -> User [label=" CSS HUD & Audio Queue "];
+}

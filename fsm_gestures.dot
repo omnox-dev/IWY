@@ -1,0 +1,19 @@
+digraph FSM_Gestures {
+    rankdir=LR;
+    node [shape=circle, style=filled, fillcolor=lightblue, fontname="Arial"];
+    edge [fontname="Arial", fontsize=10];
+    
+    Idle [label="Idle\n(Dormant)", shape=doublecircle, fillcolor=lightgreen];
+    Scanning [label="Safety Scan\n(YOLOv8)"];
+    Reading [label="OCR Scan\n(ML Kit)"];
+    ModeSwitch [label="Mode Toggle"];
+    
+    Idle -> ModeSwitch [label="Double Tap"];
+    ModeSwitch -> Idle [label="Update UI & State\n(Safety <-> OCR)"];
+    
+    Idle -> Scanning [label="Single Tap\n[If Safety Mode]"];
+    Scanning -> Idle [label="TTS Audio Complete"];
+    
+    Idle -> Reading [label="Single Tap\n[If OCR Mode]"];
+    Reading -> Idle [label="TTS Audio Complete"];
+}

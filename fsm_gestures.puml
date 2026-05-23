@@ -1,0 +1,27 @@
+@startuml FSM_Gestures
+skinparam state {
+  BackgroundColor LightBlue
+  BorderColor DarkBlue
+  FontName Arial
+}
+
+[*] --> Idle : App Launch
+
+state "Idle (Dormant State)" as Idle {
+  Idle : Camera Suspended
+  Idle : Awaiting Gesture
+}
+
+state "Toggle Mode" as ModeSwitch
+state "Safety Scan (YOLOv8)" as SafetyScan
+state "OCR Scan (Google Gemini API)" as OCRScan
+
+Idle --> ModeSwitch : Double Tap
+ModeSwitch --> Idle : State Updated\n(Safety <-> OCR)
+
+Idle --> SafetyScan : Single Tap\n[Safety Mode Active]
+SafetyScan --> Idle : TTS Synthesis Complete
+
+Idle --> OCRScan : Single Tap\n[OCR Mode Active]
+OCRScan --> Idle : TTS Synthesis Complete
+@enduml

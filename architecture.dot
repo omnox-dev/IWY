@@ -1,0 +1,52 @@
+digraph IWY_System_Architecture {
+    rankdir=LR;
+    node [shape=box, style=filled, fillcolor=lightblue, fontname="Arial"];
+    
+    subgraph cluster_mobile {
+        label="Mobile Environment (React/Capacitor)";
+        style=dashed;
+        color=darkblue;
+        fontcolor=darkblue;
+        
+        CameraMobile [label="Mobile Camera"];
+        ReactUI [label="React HUD UI"];
+        MLKit [label="Google ML Kit (OCR)"];
+        TFJS [label="TensorFlow.js (Objects)"];
+        TTSMobile [label="Native TTS API"];
+    }
+
+    subgraph cluster_desktop {
+        label="Desktop Environment (Python/OpenCV)";
+        style=dashed;
+        color=darkred;
+        fontcolor=darkred;
+        
+        CameraDesktop [label="Webcam Capture"];
+        OpenCV_UI [label="OpenCV HUD Rendering"];
+        YOLOv8 [label="YOLOv8-Nano Model"];
+        TTSDesktop [label="pyttsx3 TTS"];
+    }
+
+    subgraph cluster_user {
+        label="Glaucoma Patient";
+        style=rounded;
+        fillcolor=lightgrey;
+        UserGesture [label="On-Demand Gesture\n(Tap / Double-Tap)"];
+    }
+
+    // Mobile Flow
+    UserGesture -> ReactUI [label="Trigger Scan"];
+    ReactUI -> CameraMobile;
+    CameraMobile -> TFJS [label="Image Frame"];
+    CameraMobile -> MLKit [label="High-Res Text Frame"];
+    TFJS -> ReactUI [label="Bounding Boxes"];
+    MLKit -> ReactUI [label="Extracted Text"];
+    ReactUI -> TTSMobile [label="Spatial Summary"];
+
+    // Desktop Flow
+    UserGesture -> OpenCV_UI [label="Mouse Click"];
+    OpenCV_UI -> CameraDesktop;
+    CameraDesktop -> YOLOv8 [label="Video Frame"];
+    YOLOv8 -> OpenCV_UI [label="Detection Coordinates"];
+    OpenCV_UI -> TTSDesktop [label="Vocal Output Queue"];
+}

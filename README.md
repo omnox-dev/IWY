@@ -33,7 +33,19 @@ Launch the main application by running:
 python main.py
 ```
 
-### 4. Controls
+### 4. Using your Mobile Camera
+You can use your smartphone as a high-quality camera for this system:
+
+#### Option A: WiFi/USB (Easiest)
+1. Install **DroidCam** or **iVCam** on both your phone and PC.
+2. Connect them via WiFi or USB.
+3. In [main.py](main.py), change `CAMERA_SOURCE = 0` to `1` or `2` (the index of the virtual camera).
+
+#### Option B: IP Camera (WiFi)
+1. Install an "IP Webcam" app on your phone and start the server.
+2. In [main.py](main.py), change `CAMERA_SOURCE` to the URL provided by the app (e.g., `CAMERA_SOURCE = "http://192.168.1.5:8080/video"`).
+
+### 5. Controls
 - **'s' Key:** Start/Stop the vision monitoring system.
 - **'r' Key:** Trigger immediate OCR (reads text in the center box).
 - **'q' Key:** Quit the application.

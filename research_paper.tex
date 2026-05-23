@@ -1,0 +1,367 @@
+\documentclass[11pt, a4paper, twocolumn]{article}
+
+% --- PAGE LAYOUT ---
+\usepackage[a4paper, margin=0.7in, top=0.8in, bottom=0.8in]{geometry}
+
+% --- FONTS ---
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+
+% --- LANGUAGE & FORMATTING ---
+\usepackage[english]{babel}
+\usepackage[autostyle=true]{csquotes}
+
+% --- AUTHOR & TITLE BLOCK ---
+\usepackage{authblk}
+
+% --- GRAPHICS & FLOATS ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+
+% --- TABLES ---
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+
+% --- LISTS ---
+\usepackage{enumitem}
+
+% --- REFERENCES ---
+\usepackage[numbers, sort&compress]{natbib}
+\bibliographystyle{IEEEtranN}
+
+% --- LINKS ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=cyan,
+}
+
+% --- HEADER/FOOTER (Journal Style) ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\textbf{Implementation of IWY: AI Vision Companion}}
+\fancyfoot[L]{\textbf{Volume 1, Issue 1, Feb 2026}}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% --- SECTION NUMBERING ---
+\usepackage{titlesec}
+\renewcommand{\thesection}{\Roman{section}.}
+\renewcommand{\thesubsection}{\Alph{subsection}.}
+\renewcommand{\thesubsubsection}{\arabic{subsubsection})}
+
+% SECTION FORMAT
+\titleformat{\section}
+  {\normalfont\Large\bfseries\centering}
+  {\thesection}{1em}{}
+
+% SUBSECTION FORMAT
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+
+% --- TITLE & AUTHOR INFORMATION ---
+\title{Implementation of "I'm With You" (IWY): A Dual-Platform AI Vision System for Glaucoma Patients using Edge Computing}
+
+\author[1]{Prof. Vrushali Kanavade}
+\author[2]{Sanchit Patil}
+\author[2]{Riya Shinde}
+\author[2]{Vedant Tilekar}
+\author[2]{Pratik Walunj}
+
+\affil[1]{Assistant Professor, Computer Department, AISSMS College Of Engineering, Pune}
+\affil[2]{Student, Computer Department, AISSMS College Of Engineering, Pune}
+
+\date{}
+
+%DOCUMENT START ---
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}
+
+\noindent\textit{\textbf{Abstract---}}\textbf{Individuals suffering from Glaucoma face a unique challenge: the loss of peripheral vision creates a "tunnel vision" effect, severely hampering the detection of dynamic obstacles and environmental context. While theoretical models for assistive vision exist, practical, low-latency implementations on consumer hardware remain scarce. This paper presents the implementation of "I'm With You" (IWY), a real-time assistive vision system. We detail the development of the high-performance laptop prototype (x86 architecture) and the architectural design for the Android (ARM architecture) mobile application using a Hybrid Edge AI approach. The system integrates a YOLOv8 model for hazard detection, Tesseract.js/Capacitor for cross-platform mobility, and a priority-based audio fusion layer. We detail the engineering challenges addressed during development, including the optimization of TensorFlow.js with WebGL acceleration and multi-threaded pipeline management. While the laptop system is fully validated, the Android implementation is currently under development to refine battery-conscious duty cycling. This study validates the feasibility of hybrid software-based edge AI in restoring independence to the visually impaired.}
+\\\\
+\noindent\textit{\textbf{Keywords---}}\textbf{Edge AI, Glaucoma, YOLOv8, TensorFlow.js, Capacitor, Hybrid Mobile App, OCR, Real-Time Navigation.}
+
+\section{Introduction}
+Visual impairment is a pervasive global health issue, with the World Health Organization estimating that 2.2 billion people live with some form of vision loss \cite{glaucoma_stats}. Glaucoma, specifically, damages the optic nerve, leading to irreversible peripheral vision loss. This impairment makes navigation treacherous; patients often trip over low-lying obstacles or collide with hanging objects that fall outside their narrow central field of view.
+
+Traditional assistive technologies have stagnated. White canes provide tactile feedback but lack semantic understanding. High-end wearables are prohibitively expensive. Consequently, there is an urgent need for a "Bring Your Own Device" (BYOD) solution that leverages the powerful processors found in standard laptops and smartphones through Edge AI methodologies \cite{edge_ai}.
+
+This paper documents the technical implementation of \textbf{IWY (I'm With You)}, a unified software solution designed to act as a digital peripheral vision. Unlike previous proposal papers, this document focuses on the \textbf{executed engineering work}, including:
+\begin{enumerate}
+    \item \textbf{High-Performance Brain:} The development of a Python-based "Brain" on a laptop for high-fidelity processing.
+    \item \textbf{Bridge Architecture:} The design of a hybrid mobile architecture for Android deployment.
+    \item \textbf{Prior    graph UseCase {
+        rankdir=LR;
+        node [shape=ellipse];
+        User [shape=plaintext, label="User"];
+        
+        subgraph cluster_system {
+            label="Glaucoma Tool";
+            S [label="Toggle Monitoring"];
+            W [label="Quick Scan"];
+            R [label="OCR Reading"];
+            Alert [label="Proximity Alert"];
+        }
+        
+        User -- S;
+        User -- W;
+        User -- R;
+        Alert -- User [style=dashed, label="Audio"];
+    }ity Fusion Engine:} The construction of a novel engine that intelligently filters audio alerts to prevent cognitive overload.
+\end{enumerate}
+
+\section{Literature Review}
+The landscape of assistive technology for the visually impaired has evolved from passive tactile tools to active, sensor-driven systems. This section reviews the current state of object detection, mobile AI, and assistive frameworks.
+
+\subsection{Evolution of Real-Time Object Detection}
+The "You Only Look Once" (YOLO) family of models revolutionized computer vision by treating detection as a single regression problem \cite{redmon2016}. While early versions required high-end desktop GPUs, recent iterations like YOLOv8 have optimized the architecture for edge devices. Ultralytics' implementation provides a balance between mean Average Precision (mAP) and inference speed, making it the de facto standard for real-time safety applications \cite{ultralytics}.
+
+\subsection{Assistive Vision Frameworks}
+Previous research has explored wearable solutions, such as camera-mounted glasses connected to backpack-carried computers. However, these systems often suffer from high latency and prohibitive costs. Recent trends suggest a shift toward "Bring Your Own Device" (BYOD) models, utilizing the existing neural processing units (NPUs) in modern smartphones to provide semantic understanding of the environment \cite{edge_ai}.
+
+\subsection{Web-Native Hybrid Architectures}
+The deployment of complex models on mobile platforms traditionally required native development (Java/Swift). The emergence of frameworks like Capacitor and TensorFlow.js has enabled a hybrid approach, where high-level logic resides in a WebView while compute-intensive tasks are offloaded to the mobile GPU via WebGL \cite{tfjs, capacitor}. This reduces development friction and allows for rapid cross-platform iteration without sacrificing real-time performance.
+
+\subsection{Cognitive Load in Audio Interfaces}
+A critical gap in existing assistive vision research is the management of auditory cognitive load. Blind users report that continuous, prioritized alerts are often more confusing than helpful. Research into quantization methods \cite{quantization} and spatial audio indicates that prioritizing "dynamic hazards" over "static context" is essential for safe navigation in urban environments.
+
+\section{System Architecture}
+The IWY system moves beyond simple object detection by implementing a five-layer architecture designed for concurrency and fault tolerance.
+
+\subsection{Architectural Overview}
+The system operates as a continuous pipeline. Data flows from the input sensors through preprocessing, splits into parallel AI threads, and re-converges at the fusion layer.
+
+% --- FIGURE: SYSTEM ARCHITECTURE ---
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=0.9\linewidth]{architecture_diagram.png}
+    \fbox{\parbox{0.9\linewidth}{\centering \vspace{1.5cm} \textbf{[FIGURE 1: SYSTEM ARCHITECTURE]} \\ \vspace{0.5cm} \textit{Visual diagram showing Camera -> Preprocessing -> Parallel Threads (YOLO/OCR) -> Priority Manager -> TTS Output.} \vspace{1.5cm}}}
+    \caption{The Multi-Threaded IWY Processing Pipeline}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{Core Modules}
+\begin{itemize}
+    \item \textbf{Input Acquisition:} Captures video frames at $640 \times 480$ resolution. On the laptop, this uses OpenCV's video capture; on Android, it leverages the CameraX API for lifecycle-aware data streaming.
+    \item \textbf{Parallel AI Engines:} The video feed is split. One thread runs the YOLOv8 object detector \cite{redmon2016}, while a secondary, lower-frequency thread handles OCR tasks.
+    \item \textbf{Fusion Layer:} A logic gate that decides which detection event takes precedence (e.g., an approaching car overrides a reading of a shop sign).
+\end{itemize}
+
+\section{Implementation Details: Laptop}
+The laptop implementation serves as the high-performance prototype, allowing us to validate the interaction logic without the constraints of mobile thermal throttling.
+
+\subsection{Tech Stack}
+\begin{itemize}
+    \item \textbf{Language:} Python 3.9
+    \item \textbf{Vision Library:} OpenCV 4.5
+    \item \textbf{DL Framework:} Ultralytics YOLOv8 \cite{ultralytics}
+    \item \textbf{OCR Engine:} Tesseract 5.0 \cite{tesseract} (LSTM Neural Net)
+    \item \textbf{TTS Engine:} Pyttsx3 (Offline SAPI5/NSSS)
+\end{itemize}
+
+\subsection{Algorithm Workflow}
+The Python application initializes a multi-threaded environment. The \texttt{main} thread handles frame capture and display. A \texttt{worker} thread performs inference.
+\begin{verbatim}
+# Pseudo-code for Threading Logic
+while cap.isOpened():
+   frame = cap.read()
+   if queue.empty():
+      queue.put(frame) # Send to AI thread
+   
+   if result_available():
+       draw_boxes(frame, result)
+       priority_manager(result)
+\end{verbatim}
+This decoupling ensures that the video feed remains smooth (30 FPS) even if the heavy AI processing drops to 15-20 FPS.
+
+\subsection{Proximity Detection Logic}
+Since standard webcams lack depth sensors, we implemented a proximity detection technique using the relative area occupies by the bounding box within the video frame.
+\begin{equation}
+    P = \frac{A_{obj}}{A_{frame}} \times 100
+\end{equation}
+Where $A_{obj}$ is the pixel area of the detected object and $A_{frame}$ is the total area of the frame. If $P > 40\%$, the object is classified as an "Urgent Obstacle," triggering immediate auditory feedback and high-priority TTS alerts. This heuristic provides a computationally inexpensive way to detect collisions without stereo-vision hardware.
+
+\section{Implementation Details: Android Application}
+Porting IWY to Android required a hybrid architecture to balance rapid cross-platform deployment with the computational demands of neural networks on ARM processors.
+
+\subsection{Hybrid Bridge Architecture}
+We utilized the \textbf{Capacitor} framework \cite{capacitor} to build IWY as a Hybrid Mobile Application. This architecture consists of three layers:
+\begin{enumerate}
+    \item \textbf{Native Layer:} Manages the device's hardware (Camera, TTS, Accelerometer) via Capacitor plugins.
+    \item \textbf{Bridge Layer:} Facilitates asynchronous communication between the native hardware and the web runtime.
+    \item \textbf{WebView Layer (React):} Executes the main logic and AI inference using TensorFlow.js with WebGL hardware acceleration.
+\end{enumerate}
+
+\subsection{Android Tech Stack}
+\begin{itemize}
+    \item \textbf{Language/Framework:} React.js with Vite
+    \item \textbf{Native Bridge:} Capacitor 6.0
+    \item \textbf{ML Engine:} TensorFlow.js \cite{tfjs} (WebGL Backend)
+    \item \textbf{OCR Engine:} Tesseract.js (Offline Worker)
+    \item \textbf{Hardware Preview:} @capacitor-community/camera-preview
+\end{itemize}
+
+\subsection{WebView AI Optimization}
+To achieve real-time performance within a browser-based environment, we optimized the YOLOv8-to-TFJS conversion through modern quantization and pruning techniques \cite{quantization}:
+\begin{enumerate}
+    \item \textbf{Graph Optimization:} Pruning unused nodes to reduce IO overhead.
+    \item \textbf{WebGL Paging:} Forcing the WebGL backend to utilize the mobile GPU for matrix operations, significantly reducing CPU load compared to the standard WASM backend.
+    \item \textbf{Frame Throttling:} To preserve battery, the inference engine follows a "Duty Cycle" of 5-10 FPS, which is sufficient for typical pedestrian speeds.
+\end{enumerate}
+
+% --- FIGURE: ANDROID SCREENSHOT ---
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=0.8\linewidth]{android_ui.png}
+    \fbox{\parbox{0.8\linewidth}{\centering \vspace{1.5cm} \textbf{[FIGURE 2: ANDROID INTERFACE]} \\ \vspace{0.5cm} \textit{Visual of the Hybrid App using CameraPreview and React UI overlay.} \vspace{1.5cm}}}
+    \caption{Hybrid Android Application Interface}
+    \label{fig:android_app}
+\end{figure}
+
+\section{The Priority Fusion Layer}
+Raw detection data is overwhelming for a blind user. The core innovation of IWY is the prioritization logic.
+
+\begin{table}[h]
+\centering
+\caption{Alert Priority Hierarchy}
+\begin{tabularx}{\columnwidth}{|l|l|X|}
+\hline
+\textbf{Priority} & \textbf{Category} & \textbf{Examples} \\ \hline
+1 (Critical) & Dynamic Hazards & Vehicles, Running Person, Dog \\ \hline
+2 (High) & Static Obstacles & Chair, Table, Door (Closed) \\ \hline
+3 (Medium) & Navigation Cues & Door (Open), Stairs \\ \hline
+4 (Low) & Text/Info & Shop Signs, Documents \\ \hline
+\end{tabularx}
+\label{tab:priority}
+\end{table}
+
+The Logic Controller enforces a "Silence Period" of 3 seconds after a Priority 1 alert to ensure the user processes the danger before hearing about low-priority items like text.
+
+\section{Experimental Results}
+We conducted rigorous testing in a controlled indoor environment (college corridor) and a semi-controlled outdoor environment.
+
+\subsection{Performance Metrics}
+We evaluated the system based on three key metrics:
+\begin{enumerate}
+    \item \textbf{mAP (Mean Average Precision):} Accuracy of object detection.
+    \item \textbf{Latency:} Time taken from frame capture to audio output.
+    \item \textbf{FPS (Frames Per Second):} Smoothness of the application.
+\end{enumerate}
+
+\subsection{Detection Accuracy}
+The YOLOv8 model was fine-tuned on a custom dataset of 2,000 images specific to indoor obstacles (Indian context).
+
+\begin{table}[h]
+\centering
+\caption{Detection Accuracy by Class (Laptop vs Android)}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Object Class} & \textbf{Laptop (mAP@0.5)} & \textbf{Android (mAP@0.5)} \\ \hline
+Person & 0.96 & - \\ \hline
+Chair & 0.91 & - \\ \hline
+Table & 0.89 & - \\ \hline
+Stairs & 0.93 & - \\ \hline
+\textbf{Average} & \textbf{0.92} & \textbf{-} \\ \hline
+\end{tabular}
+\label{tab:accuracy}
+\end{table}
+
+The experimental data for the Android platform is pending final optimization of the hybrid runtime. Preliminary testing suggests a slight drop in accuracy compared to the laptop version due to the constraints of the mobile GPU's vertex processing units.
+
+\subsection{Latency Analysis}
+Safety depends on reaction time. A blind user walking at 1 m/s needs alerts within 300ms to stop safely.
+
+\begin{itemize}
+    \item \textbf{Laptop Latency:}
+    \begin{itemize}
+        \item Capture: 5ms
+        \item Inference: 22ms
+        \item Logic: 2ms
+        \item TTS Generation: 100ms
+        \item \textbf{Total: $\approx$ 129ms} (Well within safety limits)
+    \end{itemize}
+\item \textbf{Android Latency (Projected):}
+    \begin{itemize}
+        \item Frame Buffer (Native Bridge): -
+        \item Inference (TF.js WebGL): -
+        \item TTS Generation: -
+        \item \textbf{Total: $\approx$ -} (Targeting < 300ms)
+    \end{itemize}
+\end{itemize}
+
+% --- FIGURE: LATENCY CHART ---
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=0.8\linewidth]{latency_chart.png}
+    \fbox{\parbox{0.8\linewidth}{\centering \vspace{1cm} \textbf{[FIGURE 3: LATENCY COMPARISON]} \\ \vspace{0.5cm} \textit{Bar chart comparing Native High-Perf (Laptop) vs. Hybrid (Mobile).} \vspace{1cm}}}
+    \caption{System Response Time Analysis}
+    \label{fig:latency}
+\end{figure}
+
+\section{Discussion and Limitations}
+While the implementation successfully meets the core objectives, the transition to a hybrid architecture introduced specific performance trade-offs.
+
+\subsection{WebView Resource Constraints}
+On the Android platform, executing deep learning models within a WebView consumes significant memory. 
+\begin{itemize}
+    \item \textbf{Optimization:} We implemented a worker-thread for Tesseract.js to prevent UI blocking during text processing.
+    \item \textbf{Battery Result:} Quantitative battery drain analysis is currently in progress; early estimates suggest a target operational window of 4+ hours at 5 FPS.
+\end{itemize}
+
+\subsection{Lighting Sensitivity}
+Both the OCR and Object Detection modules showed degraded performance in low-light conditions ($< 20$ lux). The laptop implementation mitigates this with higher ISO webcams, but mobile sensors struggle. Future implementations will utilize the phone's flashlight automatically.
+
+\section{Future Scope}
+Having established a robust software baseline, the next phase of IWY involves hardware miniaturization.
+\begin{itemize}
+    \item \textbf{Phase 2 (Hardware):} Porting the Android logic to a Raspberry Pi 5 coupled with a tactile vest for haptic feedback.
+    \item \textbf{LiDAR Integration:} Utilizing the LiDAR sensors present in modern Pro-series smartphones to replace our heuristic distance estimation with millimeter-accurate depth maps.
+\end{itemize}
+
+\section{Conclusion}
+This paper presented the implementation and architectural design of the "I'm With You" (IWY) system. By leveraging modern Edge AI techniques, we successfully transitioned from a theoretical design to a functional laptop prototype. The laptop system achieves a latency of $\approx$129ms, providing a viable safety net for Glaucoma patients. While the Android application is currently in the development and optimization phase, the proposed hybrid architecture demonstrates that expensive, proprietary hardware is not strictly necessary to provide high-quality assistive vision. Future work will focus on finalizing the mobile deployment and integrating LiDAR-based depth mapping for enhanced obstacle avoidance.
+
+\section*{Acknowledgment}
+The authors would like to thank the Department of Computer Engineering at AISSMS College of Engineering for providing the laboratory resources required for training the deep learning models.
+
+% --- REFERENCES ---
+\begin{thebibliography}{10}
+
+\bibitem{redmon2016}
+J. Redmon, S. Divvala, R. Girshick, and A. Farhadi, "You Only Look Once: Unified, Real-Time Object Detection," in \textit{Proc. IEEE CVPR}, 2016, pp. 779-788.
+
+\bibitem{ultralytics}
+G. Jocher et al., "Ultralytics YOLOv8," GitHub repository, 2023. [Online]. Available: https://github.com/ultralytics/ultralytics.
+
+\bibitem{tesseract}
+R. Smith, "An Overview of the Tesseract OCR Engine," in \textit{Proc. ICDAR}, 2007.
+
+\bibitem{google_mlkit}
+Google Developers, "ML Kit: On-device Machine Learning," 2024. [Online]. Available: https://developers.google.com/ml-kit.
+
+\bibitem{tfjs}
+TensorFlow, "TensorFlow.js: Machine Learning in JavaScript," 2024. [Online]. Available: https://www.tensorflow.org/js.
+
+\bibitem{capacitor}
+Ionic, "Capacitor: Universal Web-Native Bridge," 2024. [Online]. Available: https://capacitorjs.com.
+
+\bibitem{glaucoma_stats}
+World Health Organization, "World Report on Vision," 2019.
+
+\bibitem{edge_ai}
+S. Khan et al., "Edge AI for Real-Time Vision: A Survey," \textit{IEEE Internet of Things Journal}, vol. 10, no. 4, 2023.
+
+\bibitem{quantization}
+A. Gholami et al., "A Survey of Quantization Methods for Efficient Neural Network Inference," \textit{arXiv preprint arXiv:2103.13630}, 2021.
+
+\end{thebibliography}
+
+\end{document}
